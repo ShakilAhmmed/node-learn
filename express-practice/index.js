@@ -36,7 +36,7 @@ app.get("/",(request,response)=>{
 
 // Get Requests For All Categories
 app.get("/api/categories",(request,response)=>{
-    response.send(categories)
+    return response.send(categories)
     //response.send(request.url);
 });
 
@@ -46,7 +46,7 @@ app.get("/api/categories/:course_id",(request,response)=>{
     // response.send(categories["course_id"])
     let category = categories.find( data => data.course_id === parseInt(request.params.course_id))
     if(!category){
-        response.status(404).send("Category Doesn't Exists");
+        return response.status(404).send("Category Doesn't Exists");
     }else{
         response.send(category);
     }
@@ -61,8 +61,7 @@ app.get("/api/categories/:course_id",(request,response)=>{
 app.post("/api/categories",(request,response)=>{
         const {error} = validation(request.body) ; 
         if(error){
-            response.status(400).send(error.details);
-            return ;
+            return response.status(400).send(error.details);
         }else{
             const new_category = {
                 course_id:categories.length + 1 ,
@@ -79,17 +78,29 @@ app.post("/api/categories",(request,response)=>{
 app.put("/api/categories/:course_id",(request,response)=>{
     let category = categories.find( data => data.course_id === parseInt(request.params.course_id))
     if(!category){
-        response.status(404).send("Category Doesn't Exists");
+        return response.status(404).send("Category Doesn't Exists");
     }else{
         const {error} = validation(request.body) ; 
         if(error){
-            response.status(400).send(error.details);
-            return ;
+            return response.status(400).send(error.details);
+            
         }else{
             category.name = request.body.name ;
             category.status = request.body.status ;
             response.send(category);
         }
+    }
+});
+
+// Delete Request 
+app.delete("/api/categories/:course_id",(request,response)=>{
+    let category = categories.find( data => data.course_id === parseInt(request.params.course_id))
+    if(!category){
+        return response.status(404).send("Category Doesn't Exists");
+    }else{
+        const index = categories.indexOf(category);
+        categories.splice(index,1);
+        response.send(categories);
     }
 });
 
@@ -103,4 +114,4 @@ function validation(data){
 
 
 
-app.listen(8081,()=>{ console.log("Listening From 8081 Port") });
+app.listen(8082,()=>{ console.log("Listening From 8082 Port") });
